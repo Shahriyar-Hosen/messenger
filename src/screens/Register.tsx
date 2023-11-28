@@ -1,6 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useState} from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   Pressable,
   StyleSheet,
@@ -9,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import {IScreenNavigation} from '../types';
+import {Axios} from '../utils';
 
 export const RegisterScreen = () => {
   const [name, setName] = useState('');
@@ -17,6 +19,34 @@ export const RegisterScreen = () => {
   const [password, setPassword] = useState('');
 
   const navigation = useNavigation<IScreenNavigation>();
+
+  const handlePress = () => {
+    const user = {
+      name,
+      email,
+      password,
+      image,
+    };
+
+    // send a post request to the backend Api
+    Axios.post('/register', user)
+      .then(res => {
+        console.log('🚀 ~ file: Register.tsx:33 ~ Axios.post ~ res:', res);
+        Alert.alert(
+          'Register successful',
+          'An error occurred wile registering',
+        );
+
+        setName('');
+        setEmail('');
+        setPassword('');
+        setImage('');
+      })
+      .catch(err => {
+        Alert.alert('Register failed', 'An error occurred while registering');
+        console.log('🚀 ~ file: Register.tsx:46 ~ handlePress ~ err:', err);
+      });
+  };
 
   return (
     <View style={styles.container}>
@@ -68,7 +98,7 @@ export const RegisterScreen = () => {
               placeholderTextColor={'black'}
             />
           </View>
-          <Pressable style={styles.btn}>
+          <Pressable onPress={handlePress} style={styles.btn}>
             <Text style={styles.btnText}>Register</Text>
           </Pressable>
           <Pressable style={styles.mt15} onPress={() => navigation.goBack()}>
